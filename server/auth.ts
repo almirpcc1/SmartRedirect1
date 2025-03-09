@@ -34,6 +34,13 @@ export function setupAuth(app: Express) {
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // Use HTTPS em produção
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 horas
+      sameSite: 'lax'
+    },
+    proxy: true // Confiar no proxy do Heroku
   };
 
   app.set("trust proxy", 1);
