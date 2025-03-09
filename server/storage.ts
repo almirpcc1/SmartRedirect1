@@ -1,8 +1,11 @@
-import { User, InsertUser, Domain, InsertDomain } from "@shared/schema";
+import { users, domains, type User, type InsertUser, type Domain, type InsertDomain } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import session from "express-session";
-import createMemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
-const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -17,83 +20,69 @@ export interface IStorage {
   sessionStore: session.Store;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private domains: Map<number, Domain>;
-  private currentUserId: number;
-  private currentDomainId: number;
+export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
-    this.users = new Map();
-    this.domains = new Map();
-    this.currentUserId = 1;
-    this.currentDomainId = 1;
-    this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000,
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
     });
   }
 
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   async getDomains(): Promise<Domain[]> {
-    return Array.from(this.domains.values());
+    return await db.select().from(domains);
   }
 
   async getDomain(id: number): Promise<Domain | undefined> {
-    return this.domains.get(id);
+    const [domain] = await db.select().from(domains).where(eq(domains.id, id));
+    return domain;
   }
 
   async createDomain(domain: InsertDomain): Promise<Domain> {
-    const id = this.currentDomainId++;
-    const newDomain: Domain = { 
-      id,
-      url: domain.url,
-      enabled: domain.enabled ?? false
-    };
-    this.domains.set(id, newDomain);
+    const [newDomain] = await db.insert(domains).values(domain).returning();
     return newDomain;
   }
 
   async updateDomain(id: number, updates: Partial<Domain>): Promise<Domain> {
-    const domain = await this.getDomain(id);
-    if (!domain) throw new Error("Domain not found");
+    const [updatedDomain] = await db
+      .update(domains)
+      .set(updates)
+      .where(eq(domains.id, id))
+      .returning();
 
-    const updatedDomain = { 
-      ...domain,
-      ...updates,
-      enabled: updates.enabled ?? domain.enabled
-    };
-    this.domains.set(id, updatedDomain);
+    if (!updatedDomain) throw new Error("Domain not found");
     return updatedDomain;
   }
 
   async deleteDomain(id: number): Promise<void> {
-    this.domains.delete(id);
+    await db.delete(domains).where(eq(domains.id, id));
   }
 
   async getRandomEnabledDomain(): Promise<Domain | undefined> {
-    const enabledDomains = Array.from(this.domains.values()).filter(
-      (domain) => domain.enabled
-    );
+    const enabledDomains = await db
+      .select()
+      .from(domains)
+      .where(eq(domains.enabled, true));
+
     if (enabledDomains.length === 0) return undefined;
     return enabledDomains[Math.floor(Math.random() * enabledDomains.length)];
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
