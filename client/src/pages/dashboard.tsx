@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2, Monitor, Smartphone } from "lucide-react";
 
 export default function Dashboard() {
   const { logoutMutation } = useAuth();
@@ -33,7 +33,8 @@ export default function Dashboard() {
   const form = useForm({
     resolver: zodResolver(insertDomainSchema),
     defaultValues: {
-      url: "",
+      desktopUrl: "",
+      mobileUrl: "",
       enabled: false,
     },
   });
@@ -43,7 +44,7 @@ export default function Dashboard() {
   });
 
   const createDomainMutation = useMutation({
-    mutationFn: async (data: { url: string; enabled: boolean }) => {
+    mutationFn: async (data: { desktopUrl: string; mobileUrl: string; enabled: boolean }) => {
       const res = await apiRequest("POST", "/api/domains", data);
       return res.json();
     },
@@ -98,16 +99,35 @@ export default function Dashboard() {
                 onSubmit={form.handleSubmit((data) =>
                   createDomainMutation.mutate(data)
                 )}
-                className="flex gap-4 items-end"
+                className="space-y-4"
               >
                 <FormField
                   control={form.control}
-                  name="url"
+                  name="desktopUrl"
                   render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Domain URL</FormLabel>
+                    <FormItem>
+                      <FormLabel>Desktop URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://example.com" {...field} />
+                        <div className="flex items-center gap-2">
+                          <Monitor className="h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="https://desktop.example.com" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="mobileUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mobile URL</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="https://mobile.example.com" {...field} />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -130,6 +150,7 @@ export default function Dashboard() {
                 />
                 <Button
                   type="submit"
+                  className="w-full"
                   disabled={createDomainMutation.isPending}
                 >
                   Add Domain
@@ -148,7 +169,8 @@ export default function Dashboard() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Domain URL</TableHead>
+                    <TableHead>Desktop URL</TableHead>
+                    <TableHead>Mobile URL</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -156,7 +178,14 @@ export default function Dashboard() {
                 <TableBody>
                   {domains?.map((domain) => (
                     <TableRow key={domain.id}>
-                      <TableCell>{domain.url}</TableCell>
+                      <TableCell className="flex items-center gap-2">
+                        <Monitor className="h-4 w-4" />
+                        {domain.desktopUrl}
+                      </TableCell>
+                      <TableCell className="flex items-center gap-2">
+                        <Smartphone className="h-4 w-4" />
+                        {domain.mobileUrl}
+                      </TableCell>
                       <TableCell>
                         <Switch
                           checked={domain.enabled}

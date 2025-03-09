@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -10,7 +10,8 @@ export const users = pgTable("users", {
 
 export const domains = pgTable("domains", {
   id: serial("id").primaryKey(),
-  url: text("url").notNull(),
+  desktopUrl: text("desktop_url").notNull(),
+  mobileUrl: text("mobile_url").notNull(),
   enabled: boolean("enabled").notNull().default(false),
 });
 
@@ -20,7 +21,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
 });
 
 export const insertDomainSchema = createInsertSchema(domains).pick({
-  url: true,
+  desktopUrl: true,
+  mobileUrl: true,
   enabled: true,
 });
 
