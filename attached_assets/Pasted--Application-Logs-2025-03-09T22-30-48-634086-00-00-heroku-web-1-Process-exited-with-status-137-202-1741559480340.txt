@@ -1,0 +1,12 @@
+
+Application Logs
+2025-03-09T22:30:48.634086+00:00 heroku[web.1]: Process exited with status 137
+2025-03-09T22:30:48.662769+00:00 heroku[web.1]: State changed from starting to crashed
+2025-03-09T22:30:49.937265+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/" host=redirecionador-ec58a237cd05.herokuapp.com request_id=e3ac3cec-0430-4ab2-b76f-4985c8d25cc5 fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
+2025-03-09T22:30:50.153556+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/favicon.ico" host=redirecionador-ec58a237cd05.herokuapp.com request_id=70cca71d-8084-43e3-b032-2f57d25deb30 fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
+2025-03-09T22:30:50.491896+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/" host=redirecionador-ec58a237cd05.herokuapp.com request_id=d2e8edf1-2da3-4832-8664-54ee19b783a1 fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
+2025-03-09T22:30:50.510020+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/dashboard" host=redirecionador-ec58a237cd05.herokuapp.com request_id=32ce5ea5-6693-44a0-be95-1d94313832db fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
+2025-03-09T22:30:53.807178+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/" host=redirecionador-ec58a237cd05.herokuapp.com request_id=28a1b440-4f31-4ca1-b180-a02f1fb0a679 fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
+2025-03-09T22:30:54.025781+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/favicon.ico" host=redirecionador-ec58a237cd05.herokuapp.com request_id=bf1af664-1c00-42ae-836f-568c7c4a0c18 fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
+2025-03-09T22:31:05.211962+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/" host=redirecionador-ec58a237cd05.herokuapp.com request_id=83e5509a-721e-487d-8aaa-c7a32d60e443 fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
+2025-03-09T22:31:05.438682+00:00 heroku[router]: at=error code=H10 desc="App crashed" method=GET path="/favicon.ico" host=redirecionador-ec58a237cd05.herokuapp.com request_id=e51fa09b-ef45-4ed2-899c-4fc1a8e7dfd5 fwd="179.214.68.158" dyno= connect= service= status=503 bytes= protocol=https
